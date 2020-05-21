@@ -102,6 +102,20 @@ class GenesisResource:
 
         return response.json()
 
+    def delete(self, **kwargs):
+        try:
+            id = kwargs['id']
+        except KeyError:
+            raise Exception(
+                    f"Please specify the id of {self.__class__.__name__}"
+                    " you want to delete")
+        response = requests.delete(
+            self.base_url + f"compute/v1/{self._route}/{id}",
+            headers=self.headers,
+        )
+        if response.status_code != 204:
+            raise APIError(response.status_code, response.content)
+
 
 for resource, route in RESOURCES.items():
     locals()[resource] = type(resource,
