@@ -1,0 +1,5 @@
+TODO
+----
+
+1. Add snapshot support
+2. Add Instace classes instead of simple dictionaries
