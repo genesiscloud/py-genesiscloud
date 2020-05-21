@@ -80,6 +80,17 @@ class GenesisResource:
         else:
             return self.__list(page=page, items=items)
 
+    def find(self, filter):
+        page = 1
+        try:
+            for item in self.list(page=page, items=100):
+                for key, value in filter.items():
+                    if key in item and item[key] == value:
+                        yield item
+            page += 1
+        except APIError:
+            return {}
+
     def create(self, **kwargs):
         response = requests.post(
             self.base_url + f"compute/v1/{self._route}",
