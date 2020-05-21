@@ -61,6 +61,8 @@ class GenesisResource:
             headers=self.headers,
             params={"page": page, "per_page": items}
         )
+        if response.status_code != 200:
+            raise APIError(response.status_code, response.content)
 
         if json:
             yield response.json()['instances']
@@ -70,6 +72,16 @@ class GenesisResource:
             # TODO: create instance of gc.Instance for each item
             for item in response.json()[self._route.replace("-", "_")]:
                 yield item
+
+    def get(self, id):
+        response = requests.get(
+            self.base_url + f"compute/v1/{self._route}/{id}",
+            headers=self.headers)
+
+        if response.status_code != 200:
+            raise APIError(response.status_code, response.content)
+
+        return response.json()
 
     def list(self, page=1, items=10, json=False, raw=False):  # noqa
 
@@ -81,6 +93,7 @@ class GenesisResource:
             return self.__list(page=page, items=items)
 
     def find(self, filter):
+
         page = 1
         try:
             for item in self.list(page=page, items=100):
@@ -142,7 +155,6 @@ class Client:
         if r.status_code in [401, 403]:
             raise ConnectionRefusedError(dict(status_code=r.status_code,
                                               body=r.content))
-
         return r
 
     def __getattr__(self, name):
