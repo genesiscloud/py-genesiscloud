@@ -1,6 +1,11 @@
 """
 An example script to show how to start a Genesis Cloud GPU instance
 with custom user data to install the NVIDIA GPU driver.
+
+Grab your API key from the UI and save it in a safe place.
+on the shell before running this script
+
+$ export GENESISCLOUD_API_KEY=secretkey
 """
 import os
 import time
@@ -12,7 +17,7 @@ from pygc.client import Client, INSTANCE_TYPES
 
 def get_startup_script():
     return \
-"""#!/bin/sh
+"""#!/bin/bash
 set -eux
 
 IS_INSTALLED=false
@@ -65,6 +70,7 @@ apt_fetch_install() {
 
 
 main() {
+    apt-get update
     if grep xenial /etc/os-release; then
         manual_fetch_install
     else
@@ -91,9 +97,9 @@ main() {
     fi
 
     if [ "${gpu_found}" ]; then
-       echo "WARNING: NVIDIA GPU device is not found or is failed"
-    else
        echo "NVIDIA GPU device is found and ready"
+    else
+       echo "WARNING: NVIDIA GPU device is not found or is failed"
     fi
 }
 
@@ -101,9 +107,6 @@ main
 """
 
 def create_instance():
-    # Grab your API key from the UI and save it in a safe place.
-    # on the shell before running this script
-    # $ export GENESISCLOUD_API_KEY=secretkey
     client = Client(os.getenv("GENESISCLOUD_API_KEY"))
 
     # before we continue to create objects, we check that we can communicate with
@@ -157,15 +160,30 @@ def create_instance():
     while my_instance['instance']['status'] != 'active':
         time.sleep(1)
         my_instance = client.Instances.get(my_instance['instance']['id'])
-        print(my_instance['instance']['status'])
-
+        print(f"{my_instance['instance']['status']}\r", end="")
+    print("")
     # yay! the instance is active
     # let's ssh to the public IP of the instance
     public_ip = my_instance['instance']['public_ip']
     print(f"The ssh address of the Instance is: {public_ip}")
 
-    sp.call(f"ssh -l ubuntu {public_ip} hostname", shell=True)
-    sp.call(f"ssh -l ubuntu {public_ip} cloud-init status", shell=True)
+    # wait for ssh to become available, this returns exit code other
+    # than 0 as long the ssh connection isn't available
+    while sp.run(
+        ("ssh -l ubuntu -o StrictHostKeyChecking=accept-new "
+            "-o ConnectTimeout=50 "
+            f"{public_ip} hostname"), shell=True).returncode:
+        time.sleep(1)
+
+    print("Congratulations! You genesiscloud instance has been created!")
+    print("You can ssh to it with:")
+    print(f"ssh -l ubuntu {public_ip}")
+    print("Some interesting commands to try at first:")
+    print("cloud-init stats # if this is still running, NVIDIA driver is still"
+          " installing")
+    print("use the following to see cloud-init output in real time:")
+    print("sudo tail -f /var/log/cloud-init-output.log")
+    return my_instance
 
 
 def destroy(instance_id):
