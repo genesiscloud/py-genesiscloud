@@ -2,6 +2,8 @@ import sys
 
 import requests
 
+from munch import Munch
+
 
 class APIError(Exception):
     """An API Error Exception"""
@@ -55,6 +57,10 @@ class GenesisResource:
     def headers(self):
         return {"Content-Type": "application/json", "X-Auth-Token": self.apikey}
 
+    def munchify(self, item):
+        return getattr(sys.modules[__name__],
+                       self.__class__.__name__[:-1])(item)
+
     def __list(self, page=1, items=10, json=False, raw=False, **kwargs):  # noqa
         response = requests.get(
             self.base_url + f"compute/v1/{self._route}",
@@ -71,7 +77,7 @@ class GenesisResource:
         else:
             # TODO: create instance of gc.Instance for each item
             for item in response.json()[self._route.replace("-", "_")]:
-                yield item
+                yield self.munchify(item)
 
     def get(self, id):
         response = requests.get(
@@ -81,7 +87,7 @@ class GenesisResource:
         if response.status_code != 200:
             raise APIError(response.status_code, response.content)
 
-        return response.json()
+        return self.munchify(response.json())
 
     def list(self, page=1, items=10, json=False, raw=False):  # noqa
 
@@ -99,7 +105,7 @@ class GenesisResource:
             for item in self.list(page=page, items=100):
                 for key, value in filter.items():
                     if key in item and item[key] == value:
-                        yield item
+                        yield self.munchify(item)
             page += 1
         except APIError:
             return {}
@@ -113,15 +119,9 @@ class GenesisResource:
         if response.status_code != 201:
             raise APIError(response.status_code, response.content)
 
-        return response.json()
+        return self.munchify(response.json())
 
-    def delete(self, **kwargs):
-        try:
-            id = kwargs['id']
-        except KeyError:
-            raise Exception(
-                    f"Please specify the id of {self.__class__.__name__}"
-                    " you want to delete")
+    def delete(self, id, **kwargs):
         response = requests.delete(
             self.base_url + f"compute/v1/{self._route}/{id}",
             headers=self.headers,
@@ -134,6 +134,9 @@ for resource, route in RESOURCES.items():
     locals()[resource] = type(resource,
                               (GenesisResource, object),
                               {"_route": route})
+
+    single_item = resource[:-1]
+    locals()[single_item] = type(single_item, (Munch, object), {})
 
 
 class Client:

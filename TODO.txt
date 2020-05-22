@@ -2,6 +2,3 @@ TODO
 ----
 
 1. Add snapshot support
-2. Add Instace classes instead of simple dictionaries
-3. More testing
-4. Fix broken user data script
