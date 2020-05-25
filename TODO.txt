@@ -2,3 +2,4 @@ TODO
 ----
 
 1. Add snapshot support
+2. Find an appropriate name
