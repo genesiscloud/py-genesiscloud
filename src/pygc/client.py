@@ -48,6 +48,9 @@ INSTANCE_TYPES = {
 
 
 class GenesisResource:
+    """
+    Template class to represent an API end point
+    """
 
     def __init__(self, apikey):
         self.base_url = "https://api.genesiscloud.com/"
@@ -130,13 +133,33 @@ class GenesisResource:
             raise APIError(response.status_code, response.content)
 
 
+class ItemView(Munch):
+    """
+    Template class to represent an item returned from the API
+    """
+    api_to_resouce = {'ssh_keys': 'SSHKey',
+                      'security_groups': 'SecurityGroup'}
+
+    def __getattr__(self, k):
+        v = super().__getattr__(k)
+        if isinstance(v, (dict, Munch)):
+            return getattr(sys.modules[__name__], k.capitalize())(v)
+        if isinstance(v, list):
+            kls = getattr(sys.modules[__name__],
+                          ItemView.api_to_resouce[k])
+            return [kls(i) for i in v]
+        return v
+
+
 for resource, route in RESOURCES.items():
     locals()[resource] = type(resource,
                               (GenesisResource, object),
                               {"_route": route})
 
     single_item = resource[:-1]
-    locals()[single_item] = type(single_item, (Munch, object), {})
+    locals()[single_item] = type(single_item,
+                                 (ItemView, object),
+                                 {})
 
 
 class Client:

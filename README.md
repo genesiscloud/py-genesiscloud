@@ -32,6 +32,26 @@ Create an instance
                             "metadata"={"startup_script":"#!/bin/bash\nsudo apt update && sudo apt install iperf3"}
                             )
 ```
+
+Accessing attributes of an Instance:
+```
+>>> inst = [i for i in client.Instances.list()][0]
+
+>>> inst.security_groups[0]
+SecurityGroup({'id': '2472c0bb-1fa9-4dcc-a658-4268e78ad907', 'name': 'default'})
+
+>>> inst.security_groups
+[SecurityGroup({'id': '2472c0bb-1fa9-4dcc-a658-4268e78ad907', 'name': 'default'}),
+ SecurityGroup({'id': 'd3040f01-3b12-4712-9e8e-8ecb1ae7ba04', 'name': 'standard'}),
+ SecurityGroup({'id': '56370632-ceeb-4357-a5d3-f2c3acf9d69e', 'name': 'Folding@home'})]
+
+>>> inst.ssh_keys
+[SSHKey({'id': '848a6631-486a-4992-8a40-5a9027415d02', 'name': 'oz123')]
+
+>>> inst.image
+Image({'id': '3c5f9b6f-2f4b-4067-ba50-925be9e6afb1', 'name': 'Ubuntu 18.04'})
+```
+
 ## Contributing to this project
 
 First, make sure you have pipenv installed.
