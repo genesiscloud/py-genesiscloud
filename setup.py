@@ -1,10 +1,7 @@
 #!/usr/bin/env python
-import os
-import sys
-
 from setuptools import find_packages, setup
 
-project = "pygc"
+project = "genesiscloud"
 version = "0.1.0"
 
 setup(
@@ -13,8 +10,8 @@ setup(
     description="A library to interact with genesiscloud",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    author="Genesis Cloud",
-    author_email="info@genesiscloud.com",
+    author="Oz Tiram",
+    author_email="oz.tiram@gmail.com",
     url="https://github.com/genesiscloud/py-genesiscloud",
     packages=find_packages(where='src'),
     package_dir={"": "src"},
