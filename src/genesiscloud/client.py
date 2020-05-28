@@ -132,7 +132,7 @@ class GenesisResource:
         if response.status_code != 201:
             raise APIError(response.status_code, response.content)
 
-        return self.munchify(response.json())
+        return self.munchify(response.json()[f"{self._route[:-1]}"])
 
     def delete(self, id, **kwargs):
         response = requests.delete(
