@@ -1,12 +1,19 @@
 #!/usr/bin/env python
+import os
+import sys
+
 from setuptools import find_packages, setup
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))  # noqa
+
+
+from genesiscloud.client import __version__
+
 project = "genesiscloud"
-version = "0.1.0"
 
 setup(
     name=project,
-    version=version,
+    version=__version__,
     description="A library to interact with genesiscloud",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
