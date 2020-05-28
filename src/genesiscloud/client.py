@@ -100,7 +100,7 @@ class GenesisResource:
         if response.status_code != 200:
             raise APIError(response.status_code, response.content)
 
-        return self.munchify(response.json())
+        return self.munchify(response.json()[f"{self._route[:-1]}"])
 
     def list(self, page=1, items=10, json=False, raw=False):  # noqa
 
