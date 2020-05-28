@@ -3,7 +3,7 @@ import pytest
 
 from munch import Munch
 
-from genesiscloud.client import Client
+from genesiscloud.client import Client, SSHKey
 
 
 SSH_RESPONSE = {'ssh_keys': [{'id': '848a6631-486a-4992-8a40-5a9027415d02',
@@ -23,6 +23,27 @@ SSH_RESPONSE = {'ssh_keys': [{'id': '848a6631-486a-4992-8a40-5a9027415d02',
                 'page': 1,
                 'per_page': 10}
 
+
+INSTANCE_CREATE = {
+    'instance':
+        {'id': '54ca3596-e7e5-423d-8a76-5636127f0d8f',
+         'name': 'demo',
+         'hostname': 'demo',
+         'type': 'vcpu-4_memory-12g_disk-80g_nvidia1080ti-1',
+         'allowed_actions': ['start', 'shutoff', 'reset'],
+         'ssh_keys': [{'id': 'c5fe90f8-659f-4c46-aaf6-85b962fed461',
+                       'name': 'oz123'}],
+         'image': {'id': '8860f26e-1f80-49eb-bf4f-aed47c6d1a63',
+                   'name': 'Ubuntu 18.04-2020-05'},
+         'security_groups': [
+             {'id': 'cf8dbf46-7a59-4d7d-87f2-5a7d07cd76d6',
+              'name': 'standard'}],
+            'status': 'enqueued',
+            'private_ip': None,
+            'public_ip': None,
+            'created_at':
+            '2020-05-28T19:04:03.802Z',
+            'updated_at': None}}
 
 
 @pytest.fixture
@@ -48,14 +69,12 @@ def test_attributes():
 
 
 @responses.activate
-def test_client_find_returns_munch():
+def test_client_find_returns_munch(client):
     responses.add(
         responses.GET,
         'https://api.genesiscloud.com/compute/v1/ssh-keys?per_page=100&page=1',
         json=SSH_RESPONSE,
         status=200)
-
-    client = Client("foobars3kr3k3y")
 
     m = next(client.SSHKeys.find({"name": "oz123"}))
     assert isinstance(m, Munch)
@@ -63,15 +82,34 @@ def test_client_find_returns_munch():
 
 
 @responses.activate
-def test_client_list_returns_munches():
+def test_client_list_returns_munches(client):
     responses.add(
         responses.GET,
         'https://api.genesiscloud.com/compute/v1/ssh-keys?per_page=10&page=1',
         json=SSH_RESPONSE,
         status=200)
 
-    client = Client("foobars3kr3k3y")
-
     sshkeys = [key for key in client.SSHKeys.list()]
     for key in sshkeys:
         assert isinstance(key, Munch)
+
+
+@responses.activate
+def test_create_instance(client):
+
+    responses.add(
+        responses.POST,
+        'https://api.genesiscloud.com/compute/v1/instances',
+        json=INSTANCE_CREATE,
+        status=201)
+
+    inst = client.Instances.create(
+        name="demo",
+        hostname="demo",
+        ssh_keys=['c5fe90f8-659f-4c46-aaf6-85b962fed461'],
+        image='8860f26e-1f80-49eb-bf4f-aed47c6d1a63',
+        type='vcpu-4_memory-12g_disk-80g_nvidia1080ti-1',
+        )
+
+    assert inst.name == "demo"
+    assert isinstance(inst.ssh_keys[0], SSHKey)
