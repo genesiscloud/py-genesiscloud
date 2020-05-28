@@ -113,3 +113,18 @@ def test_create_instance(client):
 
     assert inst.name == "demo"
     assert isinstance(inst.ssh_keys[0], SSHKey)
+
+
+@responses.activate
+def test_get_instance(client):
+    instance_id = INSTANCE_CREATE['instance']['id']
+    responses.add(
+        responses.GET,
+        f'https://api.genesiscloud.com/compute/v1/instances/{instance_id}',
+        json=INSTANCE_CREATE,
+        status=200)
+
+    inst = client.Instances.get(instance_id)
+
+    assert inst.name == "demo"
+    assert isinstance(inst.ssh_keys[0], SSHKey)
