@@ -17,6 +17,10 @@ class APIError(Exception):
         return f"{self.message}"
 
 
+GENESISCLOUD_API_ROOT = os.environ.get("GENESISCLOUD_API_ROOT",
+                                       "https://api.genesiscloud.com/")
+
+
 RESOURCES = {'Images': 'images',
              'Instances': 'instances',
              'SSHKeys': 'ssh-keys',
@@ -52,9 +56,8 @@ class GenesisResource:
     """
     Template class to represent an API end point
     """
-
     def __init__(self, apikey):
-        self.base_url = "https://api.genesiscloud.com/"
+        self.base_url = GENESISCLOUD_API_ROOT
         self.apikey = apikey
 
     @property
@@ -167,7 +170,7 @@ class Client:
 
     def __init__(self, apikey):
         self.apikey = apikey
-        self.base_url = "https://api.genesiscloud.com/"
+        self.base_url = GENESISCLOUD_API_ROOT
 
     @property
     def headers(self):
