@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import find_packages, setup
 
-project = "pygc"
+project = "genesiscloud"
 version = "0.1.0"
 
 setup(
@@ -12,7 +12,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Oz Tiram",
     author_email="oz.tiram@gmail.com",
-    url="https://github.com/oz123/pygc",
+    url="https://github.com/genesiscloud/py-genesiscloud",
     packages=find_packages(where='src'),
     package_dir={"": "src"},
     include_package_data=True,

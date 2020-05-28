@@ -12,7 +12,7 @@ import time
 import subprocess as sp
 
 
-from pygc.client import Client, INSTANCE_TYPES
+from genesiscloud.client import Client, INSTANCE_TYPES
 
 
 def get_startup_script():
@@ -119,8 +119,8 @@ def create_instance():
     # replace this to match your key
     SSHKEYNAME = 'oz123'
 
-    # pygc Instace.find method return generators - that is, they are lazy
-    # per-default.
+    # genesiscloud.client.Resource.find methods returns generators - that is,
+    # they are lazy per-default.
 
     sshkey_gen = client.SSHKeys.find({"name": SSHKEYNAME})
     sshkey = list(sshkey_gen)[0]

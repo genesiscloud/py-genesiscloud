@@ -1,7 +1,7 @@
 import responses
 from munch import Munch
 
-from pygc.client import Client
+from genesiscloud.client import Client
 
 
 SSH_RESPONSE = {'ssh_keys': [{'id': '848a6631-486a-4992-8a40-5a9027415d02',
@@ -38,7 +38,7 @@ def test_client_connect():
 
 def test_attributes():
 
-    from pygc.client import SSHKey
+    from genesiscloud.client import SSHKey
     sshkey = SSHKey({"name": "oz123"})
     assert isinstance(sshkey, Munch)
     assert sshkey.name == "oz123"

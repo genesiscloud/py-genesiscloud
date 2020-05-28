@@ -1,4 +1,4 @@
-# pygc
+# py-genesiscloud
 
 A library to interact with genesiscloud
 
@@ -6,7 +6,7 @@ A library to interact with genesiscloud
 
 Initialize the client:
 ```
->>> from pygc.client import Client
+>>> from genesiscloud.client import Client
 >>> client = Client("yourapikey")
 ```
 
