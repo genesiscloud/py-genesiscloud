@@ -8,6 +8,7 @@ on the shell before running this script
 $ export GENESISCLOUD_API_KEY=secretkey
 """
 import os
+import textwrap
 import time
 import subprocess as sp
 
@@ -15,9 +16,20 @@ import subprocess as sp
 from genesiscloud.client import Client, INSTANCE_TYPES
 
 
+def simple_startup_script():
+    return textwrap.dedent("""
+    #cloud-config
+password: changeme
+chpasswd: { expire: true }
+ssh_pwauth: True
+hostname: mytestubuntu
+runcmd:
+ - [ "ssh-import-id-gh", "oz123" ]
+    """)
+
+
 def get_startup_script():
-    return \
-"""#!/bin/bash
+    return """#!/bin/bash
 set -eux
 
 IS_INSTALLED=false
@@ -106,12 +118,13 @@ main() {
 main
 """
 
+
 def create_instance():
     client = Client(os.getenv("GENESISCLOUD_API_KEY"))
 
-    # before we continue to create objects, we check that we can communicate with
-    # the API, if the connect method does not succeed it will throw an error
-    # and the script will terminate
+    # before we continue to create objects, we check that we can communicate
+    # with the API, if the connect method does not succeed it will throw an
+    # error and the script will terminate
     if client.connect():
         pass
     # To create an instance you will need an SSH public key.
@@ -148,23 +161,23 @@ def create_instance():
 
     my_instance = client.Instances.create(name="demo",
                                           hostname="demo",
-                                          ssh_keys=[sshkey['id']],
-                                          image=ubuntu_18['id'],
+                                          ssh_keys=[sshkey.id],
+                                          image=ubuntu_18.id,
                                           type=instace_type,
                                           metadata={"startup_script":
-                                                    get_startup_script()},
+                                                    simple_startup_script()},
                                           )
     # my_instance is a dictionary containing information about the instance
     # that was just created.
     print(my_instance)
-    while my_instance['instance']['status'] != 'active':
+    while my_instance['status'] != 'active':
         time.sleep(1)
-        my_instance = client.Instances.get(my_instance['instance']['id'])
-        print(f"{my_instance['instance']['status']}\r", end="")
+        my_instance = client.Instances.get(my_instance.id)
+        print(f"{my_instance['status']}\r", end="")
     print("")
     # yay! the instance is active
     # let's ssh to the public IP of the instance
-    public_ip = my_instance['instance']['public_ip']
+    public_ip = my_instance.public_ip
     print(f"The ssh address of the Instance is: {public_ip}")
 
     # wait for ssh to become available, this returns exit code other
@@ -194,5 +207,5 @@ def destroy(instance_id):
 
 if __name__ == "__main__":
     instance = create_instance()
-    instance_id = instance['instance']['id']
+    instance_id = instance['id']
     # destroy(instance_id)

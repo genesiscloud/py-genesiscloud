@@ -88,7 +88,6 @@ class GenesisResource:
         if raw:
             yield response.json()
         else:
-            # TODO: create instance of gc.Instance for each item
             for item in response.json()[self._route.replace("-", "_")]:
                 yield self.munchify(item)
 
