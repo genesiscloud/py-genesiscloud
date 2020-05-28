@@ -1,4 +1,6 @@
 import responses
+import pytest
+
 from munch import Munch
 
 from genesiscloud.client import Client
@@ -22,18 +24,19 @@ SSH_RESPONSE = {'ssh_keys': [{'id': '848a6631-486a-4992-8a40-5a9027415d02',
                 'per_page': 10}
 
 
-def test_client_init():
 
-    assert hasattr(Client('q12313123dfsd'), "apikey")
+@pytest.fixture
+def client():
+    return Client('q12313123dfsd')
 
 
 @responses.activate
-def test_client_connect():
+def test_client_connect(client):
     responses.add(
         responses.GET,
         'https://api.genesiscloud.com/compute/v1/instances?per_page=1&page=1',
         status=200)
-    assert Client("foobars3kr3k3y").connect().status_code == 200
+    assert client.connect().status_code == 200
 
 
 def test_attributes():
