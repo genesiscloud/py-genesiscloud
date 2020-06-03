@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))  # noqa
 
 
-from genesiscloud.client import __version__
+from genesiscloud import __version__
 
 project = "genesiscloud"
 
