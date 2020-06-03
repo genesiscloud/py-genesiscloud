@@ -171,6 +171,21 @@ for resource, route in RESOURCES.items():
                                  {})
 
 
+def create_snapshot(obj, **kwargs):
+    response = requests.post(
+        obj.base_url + "compute/v1/instances/%s/snapshots" % kwargs.pop('instance_id'),  # noqa
+        headers=obj.headers,
+        json=kwargs
+    )
+    if response.status_code != 201:
+        raise APIError(response.status_code, response.content)
+
+    return obj.munchify(response.json()[f"{obj._route[:-1]}"])
+
+
+setattr(getattr(sys.modules[__name__], "Snapshots"), "create", create_snapshot)
+
+
 class Client:
 
     def __init__(self, apikey):
