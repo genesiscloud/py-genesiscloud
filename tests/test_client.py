@@ -45,6 +45,15 @@ INSTANCE_CREATE = {
             '2020-05-28T19:04:03.802Z',
             'updated_at': None}}
 
+SNAPSHOT_CREATE = {
+    'snapshot':
+        {'id': '19852250-30b7-4bbe-aeef-c46099dacb4a',
+         'name': 'test_snap',
+         'size': None,
+         'status': 'creating',
+         'resource_id': '94dc7c37-58fe-4821-af62-26b29abf8ad1',
+         'created_at': '2020-06-03T12:23:57.454Z'}}
+
 
 @pytest.fixture
 def client():
@@ -128,3 +137,32 @@ def test_get_instance(client):
 
     assert inst.name == "demo"
     assert isinstance(inst.ssh_keys[0], SSHKey)
+
+
+@responses.activate
+def test_create_snapshot(client):
+
+    responses.add(
+        responses.POST,
+        "https://api.genesiscloud.com/compute/v1/instances/%s/snapshots" % INSTANCE_CREATE['instance']['id'],
+        json=SNAPSHOT_CREATE,
+        status=201
+    )
+
+    snapshot = client.Snapshots.create(name='test_snap',
+                                       instance_id=INSTANCE_CREATE['instance']['id'])
+    assert snapshot.name == 'test_snap'
+
+@responses.activate
+def test_get_snapshot(client):
+
+    responses.add(
+        responses.GET,
+        "https://api.genesiscloud.com/compute/v1/snapshots/%s"%SNAPSHOT_CREATE['snapshot']['id'],
+        json=SNAPSHOT_CREATE,
+        status=200
+    )
+
+    snapshot = client.Snapshots.get(SNAPSHOT_CREATE['snapshot']['id'])
+
+    assert snapshot.name == 'test_snap'

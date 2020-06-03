@@ -149,7 +149,7 @@ def create_instance():
     # ('vcpu-4_memory-12g_disk-80g_nvidia1080ti-1',
     # {'vCPUs': 4, 'RAM': 12, 'Disk': 80, 'GPU': 1})
 
-    instace_type = list(INSTANCE_TYPES.keys())[0]
+    instance_type = list(INSTANCE_TYPES.keys())[0]
     # To create an instace use Instances.create
     # You must pass a ssh key to SSH into the machine. Currently, only one
     # SSH key is supported. If you need more use the command
@@ -165,7 +165,7 @@ def create_instance():
                                           hostname="demo",
                                           ssh_keys=[sshkey.id],
                                           image=ubuntu_18.id,
-                                          type=instace_type,
+                                          type=instance_type,
                                           metadata={"startup_script":
                                                     simple_startup_script()},
                                           )
