@@ -157,7 +157,9 @@ def create_instance():
     # it can fetch public key from github.com/oz123.keys
     # *Obviously* __replace__ my user name with YOURS or anyone you TRUST.
     # You should put this in the user_data script. You can add this in the
-    # text block that the function `get_startup_script` returns.
+    # text block that the function simple_startup_script() returns.
+    # To just install the NVIDIA Drivers use get_startup_script() instead
+    # of simple_startup_script.
 
     my_instance = client.Instances.create(name="demo",
                                           hostname="demo",
@@ -192,15 +194,15 @@ def create_instance():
     print("You can ssh to it with:")
     print(f"ssh -l ubuntu {public_ip}")
     print("Some interesting commands to try at first:")
-    print("cloud-init stats # if this is still running, NVIDIA driver is still"
-          " installing")
+    print("cloud-init stats # if this is still running, startup script"+
+          " is not finished")
     print("use the following to see cloud-init output in real time:")
     print("sudo tail -f /var/log/cloud-init-output.log")
     return my_instance
 
 
 def destroy(instance_id):
-    # finally destory this instance, when you no longer need it
+    # finally destroy this instance, when you no longer need it
     client = Client(os.getenv("GENESISCLOUD_API_KEY"))
     client.Instances.delete(id=instance_id)
 
