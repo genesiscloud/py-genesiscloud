@@ -1,6 +1,6 @@
 # py-genesiscloud
 
-A library to interact with genesiscloud
+A library to interact with [genesiscloud][1]
 
 ## Demo
 
@@ -62,3 +62,5 @@ Write your tests, add your features, test your features with `make test`.
 `git commit` and `git push` :-)
 
 Make a PR!
+
+[1] https://www.genesiscloud.com/

@@ -47,6 +47,17 @@ setup(
     author_email="opensource@genesiscloud.com",
     url="https://github.com/genesiscloud/py-genesiscloud",
     packages=find_packages(where='src'),
+    python_requires=">=3.6",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Development Status :: 4 - Beta",
+        "Environment :: GPU",
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License"
+    ],
     package_dir={"": "src"},
     include_package_data=True,
     zip_safe=False,
