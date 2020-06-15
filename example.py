@@ -42,14 +42,12 @@ from genesiscloud.client import Client, INSTANCE_TYPES
 
 
 def simple_startup_script():
+    """see the documentation of cloud init"""
     return textwrap.dedent("""
     #cloud-config
-password: changeme
-chpasswd: { expire: true }
-ssh_pwauth: True
 hostname: mytestubuntu
 runcmd:
- - [ "ssh-import-id-gh", "oz123" ]
+ - [ "apt", "install", "-y", "vim" ]
     """)
 
 
@@ -155,7 +153,7 @@ def create_instance():
     # To create an instance you will need an SSH public key.
     # Upload it via the Web UI, you can now find it with.
     # replace this to match your key
-    SSHKEYNAME = 'oz123'
+    SSHKEYNAME = 'YourKeyName'
 
     # genesiscloud.client.Resource.find methods returns generators - that is,
     # they are lazy per-default.
@@ -183,15 +181,20 @@ def create_instance():
     # *Obviously* __replace__ my user name with YOURS or anyone you TRUST.
     # You should put this in the user_data script. You can add this in the
     # text block that the function `get_startup_script` returns.
-
-    my_instance = client.Instances.create(name="demo",
-                                          hostname="demo",
-                                          ssh_keys=[sshkey.id],
-                                          image=ubuntu_18.id,
-                                          type=instace_type,
-                                          metadata={"startup_script":
-                                                    simple_startup_script()},
-                                          )
+    # NOTE:
+    # you can also create an instance with SSH password enabled, but you should
+    # prefer SSH key authentication. If you choose to use password, you should
+    # not pass ssh_keys
+    my_instance = client.Instances.create(
+        name="demo",
+        hostname="demo",
+        ssh_keys=[sshkey.id],  # comment this to enable password
+        image=ubuntu_18.id,
+        type=instace_type,
+        metadata={"startup_script":
+                  simple_startup_script()},
+        #password="yourSekretPassword#12!"
+        )
     # my_instance is a dictionary containing information about the instance
     # that was just created.
     print(my_instance)
