@@ -62,7 +62,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        "requests"
+        "requests",
+        "munch"
     ],
     dependency_links=[
     ],
@@ -70,7 +71,7 @@ setup(
     },
     extras_require={
         "test": [
-            "pytest"
+            "pytest",
             "responses"
         ],
         "dev": [
