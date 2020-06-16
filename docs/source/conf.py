@@ -14,6 +14,7 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+from genesiscloud import __version__
 
 # -- Project information -----------------------------------------------------
 
@@ -22,8 +23,9 @@ copyright = '2020, Genesiscloud GmbH'
 author = 'Genesiscloud GmbH'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = __version__
 
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
