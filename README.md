@@ -1,5 +1,7 @@
 # py-genesiscloud
 
+[![Documentation Status](https://readthedocs.org/projects/py-genesiscloud/badge/?version=latest)](https://py-genesiscloud.readthedocs.io/en/latest/?badge=latest)
+
 A library to interact with [genesiscloud][1]
 
 ## Demo
@@ -63,4 +65,4 @@ Write your tests, add your features, test your features with `make test`.
 
 Make a PR!
 
-[1] https://www.genesiscloud.com/
+[1]: https://www.genesiscloud.com/
