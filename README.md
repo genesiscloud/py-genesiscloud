@@ -4,6 +4,16 @@
 
 A library to interact with [genesiscloud][1]
 
+
+## Installation
+Install via pip from [PyPI](https://pypi.org/project/py-genesiscloud/).
+```
+pip install py-genesiscloud
+```
+
+## Getting Started
+Before you can start using the client create a [Genesis Cloud API key](https://account.genesiscloud.com/dashboard/security) (requires a Genesis Cloud account).
+
 ## Demo
 
 Initialize the client:
