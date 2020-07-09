@@ -47,7 +47,7 @@ jobs:
     name: Publish py-genesiscloud
     needs: build_modules
     # temporarily disable test deployments until pbr integration is done
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'release'
     runs-on: ubuntu-18.04
     steps:
       - name: Fetch artifacts
@@ -64,7 +64,6 @@ jobs:
 
         # Publish to PyPi in case a Github release is created
       - name: Publish distribution 📦 to PyPI
-        if: github.event_name == 'release'
         uses: pypa/gh-action-pypi-publish@v1.2.2
         with:
           password: ${{ secrets.pypi_token }}
