@@ -1,0 +1,70 @@
+name: py-genesiscloud CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  release:
+    types:
+      - released
+
+jobs:
+  build_modules:
+    name: Build py-genesiscloud module
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.6"
+
+      - name: Install python dependencies
+        run: pip install -e .[test]
+
+      - name: Run tests
+        run: make test
+
+      - name: Create python sdist
+        if: github.event_name != 'release'
+        run: python setup.py sdist
+
+      - name: Create python dev wheel
+        run: |
+          pip install wheel
+          python setup.py bdist_wheel
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: py-genesiscloud_${{ github.run_number }}
+          path: dist
+
+  publish_modules:
+    name: Publish py-genesiscloud
+    needs: build_modules
+    # temporarily disable test deployments until pbr integration is done
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Fetch artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: py-genesiscloud_${{ github.run_number }}
+          path: dist
+
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@v1.2.2
+        with:
+          password: ${{ secrets.test_pypi_token }}
+          repository_url: https://test.pypi.org/legacy/
+
+        # Publish to PyPi in case a Github release is created
+      - name: Publish distribution 📦 to PyPI
+        if: github.event_name == 'release'
+        uses: pypa/gh-action-pypi-publish@v1.2.2
+        with:
+          password: ${{ secrets.pypi_token }}
